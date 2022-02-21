@@ -26,11 +26,12 @@ app.get('/favorite', favoriteHandler);
 isn't required
 //page error
 app.use("/error", pageErrorHandler);
+*/
 
 //not found SHOULD ALWAYS BE IN THE END!!!
 //The star mean anything, so it will always fire that function if we put it in the beginning
 app.use("*", notFoundHandler)
-*/
+
 
 
 
@@ -75,14 +76,14 @@ function pageErrorHandler(req, res){
 
   return res.status(500).send(myPageError);
 }
-
+*/
 
 function notFoundHandler(req, res){
 
   return res.status(404).send("Page not found");
   
 }
-*/
+
 
 
 // The pice of code which make my server work.
