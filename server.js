@@ -1,5 +1,20 @@
 'use strict';
 
+
+/*
+
+.env file contents
+
+PORT=4000
+APIKEY=66f77f8f5e3b02d07744446e6e932d4a
+
+
+*/
+
+
+
+
+
 //basic (require express and turn it into a variable to use in my code)
 const express = require("express");
 
