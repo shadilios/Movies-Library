@@ -10,10 +10,10 @@
 
 ## Getting Started
 <!-- What are the steps that a user must take in order to build this app on their own machine and get it running? -->
-1- Have server.js file that processes the logic.  
-2- install npm & express so you don't have to code anything extra.  
-3- initialize server with const app = express();  
-4- user app.listen to make the server run on the port assigned.  
+1- Clone this reposirty.  
+2- Browse to the repositry's local storage folder or directory.  
+3- Run the first command: "npm init -y"  
+4- Run this second command: "npm install express cors"  
 
 
 
