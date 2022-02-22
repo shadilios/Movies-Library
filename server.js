@@ -44,6 +44,19 @@ app.get('/favorite', favoriteHandler);
 
 app.get("/searchMovies", searchMoviesHandler);
 
+
+
+//handles popular movies (working)
+app.get("/popular", popularMoviesHandler);
+
+
+//handles top rated (working)
+app.get("/topRated", topRatedHandler);
+
+
+
+
+
 //not found SHOULD ALWAYS BE IN THE END!!!
 //The star mean anything, so it will always fire that function if we put it in the beginning
 app.use("*", notFoundHandler)
@@ -55,7 +68,7 @@ app.use(errorHandler);
 
 
 //constructor to format and manipulate data from json file
-function dataFormatter(id, title, release_date, poster_path, overview){
+function DataFormatter(id, title, release_date, poster_path, overview){
 
   this.id = id;
   this.title = title;
@@ -64,6 +77,54 @@ function dataFormatter(id, title, release_date, poster_path, overview){
   this.overview = overview;
 
 }
+
+
+
+function popularMoviesHandler(req, res) {
+  let popularMovies = [];
+  axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=${APIKEY}&language=en-US&page=1`).then((value) => {
+
+      value.data.results.forEach((value) => {
+        let popularMovie = new DataFormatter(value.id, value.title, value.release_date, value.poster_path, value.overview);
+        popularMovies.push(popularMovie);
+      });
+      return res.status(200).json(popularMovies);
+    })
+    .catch((error) => {
+      errorHandler(error, req, res);
+    });
+}
+
+
+
+
+
+
+
+function topRatedHandler(req, res) {
+  let topRatedMovies = [];
+
+  axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=${APIKEY}&language=en-US&page=1`).then((value) => {
+
+      value.data.results.forEach((value) => {
+        let topRatedMovie = new DataFormatter(value.id, value.title, value.release_date, value.poster_path, value.overview);
+        topRatedMovies.push(topRatedMovie);
+      });
+      return res.status(200).json(topRatedMovies);
+    })
+    .catch((error) => {
+      errorHandler(error, req, res);
+    });
+}
+
+
+
+
+
+
+
+
+
 
 //this function gave me suicidal thoughts
 //restudy it so you don't kill yourself
@@ -86,7 +147,7 @@ function trendingHandler(req, res){
 
     apiRespone.data.results.map(value => {
       
-      let oneMovie = new dataFormatter(value.id, value.title, value.release_date, value.poster_path, value.overview);
+      let oneMovie = new DataFormatter(value.id, value.title, value.release_date, value.poster_path, value.overview);
 
       myFormattedMovies.push(oneMovie);
 
@@ -107,16 +168,25 @@ function trendingHandler(req, res){
 
 function searchMoviesHandler(req, res){
 
-  const search = req.query;
+  //my keyword is something I assign, and it's what I type in postman
 
 
-  console.log(req);
-  
+  // http://localhost:4000/searchMovies?myKeyword=""
 
+  let searchquery = req.query.myKeyword;
+  console.log(req.query.myKeyword);
+  let searchedMovies=[];
+  axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APIKEY}&query=${searchquery}`).then(value => {
+      value.data.results.forEach(movies => {
+          let searchedMovie = new DataFormatter (movies.id, movies.title, movies.release_date, movies.poster_path, movies.overview);
+          searchedMovies.push(searchedMovie);
 
-  axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APIKEY}&language=en-US&query=${search}&page=2`).then(apiRespone => {
-    console.log(apiRespone.data);
-  })
+      })
+      return res.status(200).json(searchedMovies);
+  }).catch(error => {
+      errorHandler(error, req,res);
+    
+  });
 
 }
 
