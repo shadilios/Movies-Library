@@ -29,6 +29,10 @@ const axios = require("axios");
 //initializing server!
 const app = express();
 
+//require pg for sql
+const pg =require("pg");
+
+
 
 
 //variables that live in my .env file
@@ -36,7 +40,17 @@ const APIKEY = process.env.APIKEY;
 
 const PORT = process.env.PORT;
 
+
+//connect database to the env
+const DATABASE_URL = process.env.DATABASE_URL;
+// initialize
+const client = new pg.Client(DATABASE_URL);
+
 // All my end points note: not found end point always should be in the end.
+
+//handle add fav movie
+app.post("/addFavMovie", addFavMovieHandler);
+
 
 //handle the trending
 app.get('/trending', trendingHandler);
@@ -98,6 +112,28 @@ function popularMoviesHandler(req, res) {
 }
 
 
+
+
+function addFavMovieHandler(req, res){
+  
+  //  assign the object we get from postman (front end) to someName
+  const someNameXYZ = req.body;
+
+
+  //we follow this it's safe
+  const sql = `INSERT INTO tableName(title, release_date, poster_path, overview) VALUES($1, $2, $3, $4) RETURNING *`
+
+  //now we make array
+  const values = [someNameXYZ.title, someNameXYZ.release_date, someNameXYZ.poster_path, someNameXYZ.overview];
+
+  client.query(sql, values).then((someResult) => {
+    //  if we console.log(someResult);  we will get a huge object, what we care about is an array called rows and it has the object we create on postman
+    res.status(201).json(someResult.rows)
+  })
+
+
+
+}
 
 
 
@@ -186,7 +222,7 @@ function searchMoviesHandler(req, res){
       })
       return res.status(200).json(searchedMovies);
   }).catch(error => {
-      errorHandler(error, req,res);
+      errorHandler(error, req, res);
     
   });
 
@@ -222,13 +258,17 @@ function errorHandler(error, req, res){
 
 
 
+client.connect().then(() => {
+
+  app.listen(PORT, () => {
+    console.log(`Listen on ${PORT}`);
+  });
+
+})
 
 
 
 
-app.listen(PORT, () => {
-  console.log(`Listen on ${PORT}`);
-});
 
 
 
