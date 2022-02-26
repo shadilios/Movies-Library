@@ -51,7 +51,7 @@ const client = new pg.Client(DATABASE_URL);
 // All my end points note: not found end point always should be in the end.
 
 //handle add fav movie
-app.post("/addFavMovie", addFavMovieHandler);
+app.post("/addMovie", addFavMovieHandler);
 
 
 //handle the trending
