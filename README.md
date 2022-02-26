@@ -69,7 +69,6 @@
 
 ## WRRC
 ![WRRC4](https://user-images.githubusercontent.com/70282602/155857602-88619132-943f-4c34-b716-c6e3c33578aa.png)
-![WRRC4zoomed](https://user-images.githubusercontent.com/70282602/155857606-42c83d1b-50de-4b10-bbe6-2e1fef8d6844.png)
 
 
 ## Project Features
