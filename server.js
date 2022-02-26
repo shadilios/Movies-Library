@@ -42,12 +42,14 @@ const APIKEY = process.env.APIKEY;
 
 const PORT = process.env.PORT;
 
-/*
+
 //connect database to the env
 const DATABASE_URL = process.env.DATABASE_URL;
+/*
 // initialize
 const client = new pg.Client(DATABASE_URL);
 */
+
 
 const client = new pg.Client({
   connectionString: process.env.DATABASE_URL,
@@ -121,18 +123,11 @@ function DataFormatter(id, title, release_date, poster_path, overview){
 
 
 function firstMovieHandler(req, res) {
-  let firstArray = [];
-  myData.data.forEach((value) => {
-    let someMovie = new DataFormatter(
-      value.id,
-      value.title,
-      value.release_date,
-      value.poster_path,
-      value.overview
-    );
-    firstArray.push(someMovie);
-  });
-  return res.status(200).json(firstArray);
+ //reformat my data to the required
+ let oneMovie = new DataFormatter(myData.title, myData.poster_path, myData.overview);
+
+ //just use 200 when you succeed a request, will discuss this later
+ return res.status(200).json(oneMovie);
 }
 
 
