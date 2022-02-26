@@ -55,7 +55,7 @@
 
 ## Project Features
 <!-- What are the features included in you app -->
- 1- Add movie to a local data base storage using postgres.
+ 1- Add movie to a local data base storage using postgres.    
  2- Retreive all added movies from my local storage.    
  
  
