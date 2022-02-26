@@ -33,6 +33,8 @@ const app = express();
 const pg =require("pg");
 
 
+//MAKE SURE YOU USE THIS OR THE SQL STUFF WILL NOT WORK!!!!!!!!!!!!!!!
+app.use(express.json());
 
 
 //variables that live in my .env file
@@ -58,7 +60,8 @@ app.get('/trending', trendingHandler);
 //this handles favorite (task requirement)
 app.get('/favorite', favoriteHandler);
 
-app.get("/searchMovies", searchMoviesHandler);
+//search movies
+app.get("/search", searchMoviesHandler);
 
 
 
@@ -70,6 +73,17 @@ app.get("/popular", popularMoviesHandler);
 app.get("/topRated", topRatedHandler);
 
 
+//get saved movies from data base
+app.get("/getMovies", favMoviesGetHandler);
+
+//  I want a way to get back specific movie from database
+app.get("getMovie/:id", getMovieHandler);
+
+//update specific movie
+app.put("/UPDATE/:id", updateMovieHandler);
+
+//delete specific movie
+app.delete("/DELETE/:id", deleteMovieHandler)
 
 
 
@@ -112,24 +126,112 @@ function popularMoviesHandler(req, res) {
 }
 
 
+function getMovieHandler(req, res){
+
+  let id = req.params.id;
+
+  const sql =`SELECT * FROM favoriteMoviesTable WHERE id=$1`
+  const values =[id];
+
+  client.query(sql, values).then((result) => {
+    
+    return res.status(200).json(result.rows[0]);
+    
+  }).catch ((error) => {
+    errorHandler(error, req, res);
+  })
+
+}
+
+
+
+function updateMovieHandler(req, res){
+
+  const id = req.params.id;
+  const movie = req.body;
+  
+
+  const sql = `UPDATE favoriteMoviesTable SET title = $1, release_date = $2, poster_path = $3, overview = $4, comment = $5 WHERE id = $6 RETURNING *;`;
+  const values = [movie.title, movie.release_date, movie.poster_path, movie.overview, movie.comment, id]
+
+  client.query(sql, values).then((result) => {
+
+    return res.status(200).json(result.rows);
+
+  }).catch((error) => {
+
+    errorHandler(error, req, res);
+
+  })
+
+}
+
+
+function deleteMovieHandler(req, res){
+
+  const id = req.params.id;
+
+
+  const sql = `DELETE FROM favoriteMoviesTable WHERE id=$1`
+  const values = [id];
+
+  client.query(sql, values).then((result) => {
+
+    return res.status(204).json({});
+
+    //  we return empty object or array cuz we're deleting
+
+  }).catch(error => {
+    errorHandler(error, req, res); 
+  })
+
+}
+
+
+
+function favMoviesGetHandler(req, res){
+
+
+  const sql = `SELECT * FROM favoriteMoviesTable`
+
+  client.query(sql).then((result) => {
+
+    //  console.log(result);
+    //  this will output a big object, it will return in this example something called rows, so we do result.rows
+
+    return res.status(200).json(result.rows);
+
+  }).catch((error) => {
+
+    errorHandler(error, req, res)
+
+  })
+
+
+
+}
+
 
 
 function addFavMovieHandler(req, res){
   
   //  assign the object we get from postman (front end) to someName
-  const someNameXYZ = req.body;
+  const movie = req.body;
 
+  console.log(req.body);
 
   //we follow this it's safe
-  const sql = `INSERT INTO tableName(title, release_date, poster_path, overview) VALUES($1, $2, $3, $4) RETURNING *`
+  const sql = `INSERT INTO favoriteMoviesTable(title, release_date, poster_path, overview, comment) VALUES($1, $2, $3, $4, $5) RETURNING *`
 
   //now we make array
-  const values = [someNameXYZ.title, someNameXYZ.release_date, someNameXYZ.poster_path, someNameXYZ.overview];
+  const values = [movie.title, movie.release_date, movie.poster_path, movie.overview, movie.comment];
 
-  client.query(sql, values).then((someResult) => {
-    //  if we console.log(someResult);  we will get a huge object, what we care about is an array called rows and it has the object we create on postman
-    res.status(201).json(someResult.rows)
-  })
+  client.query(sql, values).then((result) => {
+    //  if we console.log(result);  we will get a huge object, what we care about is an array called rows and it has the object we create on postman
+    res.status(201).json(result.rows)
+  }).catch((error) => {
+    errorHandler(error, req, res);
+  });
 
 
 
@@ -209,11 +311,12 @@ function searchMoviesHandler(req, res){
   //my keyword is something I assign, and it's what I type in postman
 
 
-  // http://localhost:4000/searchMovies?myKeyword=""
+  // http://localhost:4000/search?myKeyword=""
 
   let searchquery = req.query.myKeyword;
   console.log(req.query.myKeyword);
   let searchedMovies=[];
+
   axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APIKEY}&query=${searchquery}`).then(value => {
       value.data.results.forEach(movies => {
           let searchedMovie = new DataFormatter (movies.id, movies.title, movies.release_date, movies.poster_path, movies.overview);
