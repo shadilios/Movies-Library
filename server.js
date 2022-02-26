@@ -42,11 +42,18 @@ const APIKEY = process.env.APIKEY;
 
 const PORT = process.env.PORT;
 
-
+/*
 //connect database to the env
 const DATABASE_URL = process.env.DATABASE_URL;
 // initialize
 const client = new pg.Client(DATABASE_URL);
+*/
+
+const client = new pg.Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
 
 // All my end points note: not found end point always should be in the end.
 

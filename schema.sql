@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS favoriteMoviesTable
+DROP TABLE IF EXISTS favoriteMoviesTable;
 
 CREATE TABLE IF NOT EXISTS favoriteMoviesTable(
   id SERIAL PRIMARY KEY,    
