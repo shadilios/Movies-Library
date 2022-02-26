@@ -55,6 +55,10 @@ const client = new pg.Client({
 });
 
 
+
+//
+app.get("/", firstMovieHandler);
+
 // All my end points note: not found end point always should be in the end.
 
 //handle add fav movie
@@ -113,6 +117,22 @@ function DataFormatter(id, title, release_date, poster_path, overview){
   this.poster_path = poster_path;
   this.overview = overview;
 
+}
+
+
+function firstMovieHandler(req, res) {
+  let firstArray = [];
+  myData.data.forEach((value) => {
+    let someMovie = new DataFormatter(
+      value.id,
+      value.title,
+      value.release_date,
+      value.poster_path,
+      value.overview
+    );
+    firstArray.push(someMovie);
+  });
+  return res.status(200).json(firstArray);
 }
 
 
@@ -193,6 +213,7 @@ function deleteMovieHandler(req, res){
   })
 
 }
+
 
 
 
