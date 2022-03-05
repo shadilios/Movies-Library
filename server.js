@@ -25,9 +25,15 @@ dotenv.config();
 //get axios so we can send http request to an API
 const axios = require("axios");
 
+const cors = require("cors");
+
 
 //initializing server!
 const app = express();
+
+
+app.use(cors());
+
 
 //require pg for sql
 const pg =require("pg");
